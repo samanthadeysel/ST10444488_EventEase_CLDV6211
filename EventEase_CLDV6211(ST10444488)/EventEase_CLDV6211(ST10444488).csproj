@@ -5,6 +5,7 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <RootNamespace>EventEase_CLDV6211_ST10444488_</RootNamespace>
+    <UserSecretsId>54eca4e1-7350-4152-aade-d457c38bc77c</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
