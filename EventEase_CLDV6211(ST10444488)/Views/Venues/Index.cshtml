@@ -30,7 +30,7 @@
     <tbody>
 @foreach (var item in Model) {
         <tr>
-            <td>
+            @* <td>
 
                     @if (item.ImageURL != null && item.ImageURL.Any())
                     {
@@ -43,7 +43,7 @@
                     {
                         <img src="https://picsum.photos/200/300" alt="Venue Image" width="100">
                     }
-                </td>
+                </td> *@
             <td>
                 @Html.DisplayFor(modelItem => item.VenueName)
             </td>

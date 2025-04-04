@@ -163,3 +163,78 @@ body {
         margin: 0 8px;
     }
 }
+.contact-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 20px;
+    text-align: center;
+}
+
+.contact-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #333333;
+    margin-bottom: 30px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.company-info {
+    margin-bottom: 50px;
+}
+
+    .company-info h2 {
+        font-size: 1.8rem;
+        color: #D4A373;
+        font-weight: 600;
+    }
+
+.contact-content {
+    display: flex;
+    justify-content: center;
+}
+
+.contact-details {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+    text-align: left;
+}
+
+.contact-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+    .contact-item i {
+        font-size: 1.5rem;
+        color: #D4A373;
+        width: 30px;
+        text-align: center;
+    }
+
+    .contact-item span {
+        font-size: 1.1rem;
+        color: #333333;
+    }
+
+@media (max-width: 768px) {
+    .contact-title {
+        font-size: 2rem;
+    }
+
+    .company-info h2 {
+        font-size: 1.5rem;
+    }
+
+    .contact-item {
+        flex-direction: column;
+        text-align: center;
+        gap: 8px;
+    }
+
+        .contact-item i {
+            margin-bottom: 5px;
+        }
+}
