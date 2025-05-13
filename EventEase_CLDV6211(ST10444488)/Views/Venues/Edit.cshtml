@@ -6,13 +6,21 @@
 
 <h1>Edit</h1>
 
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">
+        @TempData["ErrorMessage"]
+    </div>
+}
+
 <h4>Venue</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="Edit">
+        <form asp-action="Edit" method="post" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="VenueID" />
+            <input type="hidden" asp-for="ImageURL" />
             <div class="form-group">
                 <label asp-for="VenueName" class="control-label"></label>
                 <input asp-for="VenueName" class="form-control" />
@@ -31,15 +39,20 @@
             <div class="form-group">
                 @if (!string.IsNullOrEmpty(Model.ImageURL))
                 {
-                    <p>Current Image:</p>
-                    <img src="@Model.ImageURL" alt="Venue Image" class="img-fluid" width="200" />
+                    <div class="form-group">
+                        <p>Current Image:</p>
+                        <img src="@Model.ImageURL?cachebuster=@DateTime.Now.Ticks" alt="Venue Image" class="img-fluid" width="200" />
+                    </div>
                 }
+
             <div class="form-group">
-                    <label for="photoFile">Upload New Image:</label>
-                    <input type="file" name="photoFile" accept="image/*" class="form-control" />
+                <label for="photoFile">Replace Image:</label>
+                <input type="file" name="photoFile" accept="image/*" class="form-control" />
             </div>
+
             <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
+                <input type="submit" value="Save Changes" class="btn btn-primary" />
+                <a asp-action="Index" class="btn btn-secondary">Back to Venues</a>
             </div>
         </form>
     </div>

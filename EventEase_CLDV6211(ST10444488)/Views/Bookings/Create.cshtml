@@ -6,6 +6,13 @@
 
 <h1>Create</h1>
 
+@if (ViewData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">
+        @ViewData["ErrorMessage"]
+    </div>
+}
+
 <h4>Booking</h4>
 <hr />
 <div class="row">

@@ -61,13 +61,13 @@ namespace EventEase_CLDV6211_ST10444488_.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("BookingID,EventID,VenueID,BookingDate")] Booking booking)
         {
-            bool isVenueBooked = await _context.Booking.AnyAsync(b =>
-                b.VenueID == booking.VenueID &&
-                b.BookingDate == booking.BookingDate);
+            bool bookingExists = await _context.Booking
+                .AnyAsync(b => b.VenueID == booking.VenueID && b.BookingDate.Date == booking.BookingDate.Date);
 
-            if (isVenueBooked)
+            if (bookingExists)
             {
-                ModelState.AddModelError("VenueID", "This venue is already booked for the selected date.");
+                ViewData["ErrorMessage"] = "This venue is already booked on this date. Please choose another date or venue.";
+                return View(booking);
             }
 
             if (ModelState.IsValid)

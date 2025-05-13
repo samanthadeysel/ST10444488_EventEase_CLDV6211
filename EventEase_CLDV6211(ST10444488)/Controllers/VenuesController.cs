@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using EventEase_CLDV6211_ST10444488_.Data;
 using EventEase_CLDV6211_ST10444488_.Models;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace EventEase_CLDV6211_ST10444488_.Controllers
 {
@@ -61,6 +62,7 @@ namespace EventEase_CLDV6211_ST10444488_.Controllers
                     {
                         venue.ImageURL = await _blobService.UploadFileAsync(photoFile); // Upload image to Blob Storage
                     }
+                    
                     _context.Add(venue);
                     await _context.SaveChangesAsync();
                     return RedirectToAction(nameof(Index));
@@ -97,38 +99,55 @@ namespace EventEase_CLDV6211_ST10444488_.Controllers
         public async Task<IActionResult> Edit(int id, [Bind("VenueID,VenueName,Capacity,Location,ImageURL")] Venue venue, IFormFile photoFile)
         {
             if (id != venue.VenueID)
-            {
                 return NotFound();
-            }
+
+            var existingVenue = await _context.Venue.FindAsync(id);
+            if (existingVenue == null)
+                return NotFound();
+
             if (ModelState.IsValid)
             {
                 try
                 {
-                    if (photoFile != null && photoFile.Length > 0)
+                    // ✅ Logging: Check if an image was received
+                    if (photoFile == null || photoFile.Length == 0)
                     {
-                        Console.WriteLine("Uploading new image to Azure Blob Storage...");
-                        venue.ImageURL = await _blobService.UploadFileAsync(photoFile);
-                        Console.WriteLine($"Image uploaded successfully. New URL: {venue.ImageURL}");
+                        Console.WriteLine("No new image uploaded.");
                     }
                     else
                     {
-                        Console.WriteLine("No new image uploaded. Keeping existing image.");
+                        Console.WriteLine($"New image uploaded: {photoFile.FileName}");
+
+                        // Delete old image and upload new one
+                        if (!string.IsNullOrEmpty(existingVenue.ImageURL))
+                        {
+                            await _blobService.DeleteFileAsync(existingVenue.ImageURL);
+                        }
+
+                        existingVenue.ImageURL = await _blobService.UploadFileAsync(photoFile);
                     }
-                    _context.Update(venue);
+
+                    // ✅ Logging: Ensure other details are updating
+                    Console.WriteLine($"Updating venue: {venue.VenueName}, Capacity: {venue.Capacity}, Location: {venue.Location}");
+
+                    existingVenue.VenueName = venue.VenueName;
+                    existingVenue.Capacity = venue.Capacity;
+                    existingVenue.Location = venue.Location;
+
+                    _context.Update(existingVenue);
                     await _context.SaveChangesAsync();
-                    Console.WriteLine("Venue updated successfully!");
                     return RedirectToAction(nameof(Index));
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"Error updating venue: {ex.Message}");
                     TempData["ErrorMessage"] = $"Error updating venue: {ex.Message}";
                 }
             }
             else
             {
-                Console.WriteLine("ModelState is invalid! Returning to Edit page.");
+                TempData["ErrorMessage"] = "Invalid input. Please check your entries.";
             }
+
             return View(venue);
         }
 

@@ -54,15 +54,17 @@ namespace EventEase_CLDV6211_ST10444488_.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("EventID,EventName,EventDate,Description")] Event @event)
+        public async Task<IActionResult> Create([Bind("EventID,EventName,EventDate,Description,VenueID")] Event eventModel)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(@event);
+                _context.Add(eventModel);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(@event);
+
+            TempData["ErrorMessage"] = "Invalid input. Please check your entries.";
+            return View(eventModel);
         }
 
         // GET: Events/Edit/5

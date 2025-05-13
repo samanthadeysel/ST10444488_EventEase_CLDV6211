@@ -11,7 +11,7 @@ namespace EventEase_CLDV6211_ST10444488_.Models
         [Range(2, int.MaxValue)]
         public int Capacity { get; set; }
         public string Location { get; set; }
-        public string? ImageURL { get; set; }
+        public string ImageURL { get; set; }
 
         public List<Booking>? Bookings { get; set; }
     }

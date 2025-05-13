@@ -42,4 +42,20 @@ public class BlobService
 
         return blobClient.Uri.ToString(); // This ensures the URL is stored correctly
     }
+    public async Task DeleteFileAsync(string blobUrl)
+    {
+        try
+        {
+            var blobUri = new Uri(blobUrl);
+            string blobName = Path.GetFileName(blobUri.LocalPath);
+            var blobClient = _containerClient.GetBlobClient(blobName);
+
+            await blobClient.DeleteIfExistsAsync();
+            Console.WriteLine($"Deleted blob: {blobUrl}");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error deleting blob: {ex.Message}");
+        }
+    }
 }

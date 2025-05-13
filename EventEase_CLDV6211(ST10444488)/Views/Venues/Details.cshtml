@@ -32,7 +32,7 @@
                 @if (!string.IsNullOrEmpty(Model.ImageURL))
                 {
                 <div class="image-container">
-                    <img src="@Model.ImageURL" alt="Venue Image" class="img-fluid" width="300" />
+                    <img src="@Model.ImageURL?cachebuster=@DateTime.Now.Ticks" alt="Venue Image" class="img-fluid" width="300" />
                 </div>
                 }
                 else
