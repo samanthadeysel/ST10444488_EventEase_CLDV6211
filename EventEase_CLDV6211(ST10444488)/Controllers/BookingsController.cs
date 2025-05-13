@@ -179,7 +179,7 @@ namespace EventEase_CLDV6211_ST10444488_.Controllers
 
         public async Task<IActionResult> Search(string searchTerm, DateTime? startDate, DateTime? endDate, string location)
         {
-            // Fetch distinct locations for dropdown
+            
             ViewBag.Venues = await _context.Venue
                 .Select(v => v.Location)
                 .Distinct()
@@ -190,7 +190,6 @@ namespace EventEase_CLDV6211_ST10444488_.Controllers
                 .Include(b => b.Events)
                 .AsQueryable();
 
-            // Apply search filters
             if (!string.IsNullOrEmpty(searchTerm))
             {
                 bookingsQuery = bookingsQuery.Where(b =>

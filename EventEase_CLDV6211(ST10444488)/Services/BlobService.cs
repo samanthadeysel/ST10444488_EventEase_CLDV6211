@@ -34,13 +34,12 @@ public class BlobService
             await blobClient.UploadAsync(stream, true);
         }
 
-        // Set the correct content type (so it opens in the browser instead of downloading)
         await blobClient.SetHttpHeadersAsync(new Azure.Storage.Blobs.Models.BlobHttpHeaders
         {
             ContentType = file.ContentType
         });
 
-        return blobClient.Uri.ToString(); // This ensures the URL is stored correctly
+        return blobClient.Uri.ToString(); 
     }
     public async Task DeleteFileAsync(string blobUrl)
     {

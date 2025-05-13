@@ -60,7 +60,7 @@ namespace EventEase_CLDV6211_ST10444488_.Controllers
                 {
                     if (photoFile != null && photoFile.Length > 0)
                     {
-                        venue.ImageURL = await _blobService.UploadFileAsync(photoFile); // Upload image to Blob Storage
+                        venue.ImageURL = await _blobService.UploadFileAsync(photoFile); 
                     }
                     
                     _context.Add(venue);
@@ -109,7 +109,6 @@ namespace EventEase_CLDV6211_ST10444488_.Controllers
             {
                 try
                 {
-                    // ✅ Logging: Check if an image was received
                     if (photoFile == null || photoFile.Length == 0)
                     {
                         Console.WriteLine("No new image uploaded.");
@@ -117,8 +116,7 @@ namespace EventEase_CLDV6211_ST10444488_.Controllers
                     else
                     {
                         Console.WriteLine($"New image uploaded: {photoFile.FileName}");
-
-                        // Delete old image and upload new one
+                                                
                         if (!string.IsNullOrEmpty(existingVenue.ImageURL))
                         {
                             await _blobService.DeleteFileAsync(existingVenue.ImageURL);
@@ -127,7 +125,6 @@ namespace EventEase_CLDV6211_ST10444488_.Controllers
                         existingVenue.ImageURL = await _blobService.UploadFileAsync(photoFile);
                     }
 
-                    // ✅ Logging: Ensure other details are updating
                     Console.WriteLine($"Updating venue: {venue.VenueName}, Capacity: {venue.Capacity}, Location: {venue.Location}");
 
                     existingVenue.VenueName = venue.VenueName;
@@ -175,15 +172,15 @@ namespace EventEase_CLDV6211_ST10444488_.Controllers
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var venue = await _context.Venue
-                .Include(v => v.Bookings) // Include related bookings
+                .Include(v => v.Bookings) 
                 .FirstOrDefaultAsync(v => v.VenueID == id);
             if (venue == null)
                 return NotFound();
-            // Check if the venue has active bookings
+            
             if (venue.Bookings != null && venue.Bookings.Any())
             {
                 TempData["ErrorMessage"] = "Venue cannot be deleted because it has active bookings!";
-                return RedirectToAction(nameof(Index)); // Prevent deletion
+                return RedirectToAction(nameof(Index)); 
             }
             _context.Venue.Remove(venue);
             await _context.SaveChangesAsync();
