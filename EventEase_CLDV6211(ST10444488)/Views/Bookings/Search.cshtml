@@ -1,0 +1,66 @@
+﻿@model IEnumerable<EventEase_CLDV6211_ST10444488_.Models.Booking>
+
+@{
+    ViewData["Title"] = "Search Bookings";
+}
+
+<h1>Search Bookings</h1>
+
+<form asp-action="Search" method="get" class="form-inline mb-3">
+    <div class="form-group">
+        <label for="searchTerm">Search by Booking ID or Event Name:</label>
+        <input type="text" name="searchTerm" class="form-control" placeholder="Enter Booking ID or Event Name">
+    </div>
+
+    <div class="form-group">
+        <label for="startDate">Start Date:</label>
+        <input type="date" name="startDate" class="form-control">
+    </div>
+
+    <div class="form-group">
+        <label for="endDate">End Date:</label>
+        <input type="date" name="endDate" class="form-control">
+    </div>
+
+    <div class="form-group">
+        <label for="location">Location:</label>
+        <select name="location" class="form-control">
+            <option value="">All Locations</option>
+            @if (ViewBag.Venues != null)
+            {
+                foreach (var venueLocation in ViewBag.Venues)
+                {
+                    <option value="@venueLocation">@venueLocation</option>
+                }
+            }
+        </select>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Search</button>
+</form>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Booking ID</th>
+            <th>Booking Date</th>
+            <th>Event Name</th>
+            <th>Venue Name</th>
+            <th>Location</th>
+            <th>Capacity</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.BookingID</td>
+                <td>@item.BookingDate.ToString("yyyy-MM-dd")</td>
+                <td>@(item.Events != null ? item.Events.EventName : "No Event Assigned")</td>
+                <td>@(item.Venues != null ? item.Venues.VenueName : "No Venue Assigned")</td>
+                <td>@(item.Venues != null ? item.Venues.Location : "Unknown")</td>
+                <td>@(item.Venues != null ? item.Venues.Capacity : "N/A")</td>
+            </tr>
+        }
+    </tbody>
+</table>

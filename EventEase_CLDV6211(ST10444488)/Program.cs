@@ -8,6 +8,13 @@ builder.Services.AddDbContext<EventEase_CLDV6211_ST10444488_Context>(options =>
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
+
+builder.Services.AddSingleton<BlobService>(provider =>
+{
+    var configuration = provider.GetRequiredService<IConfiguration>();
+    return new BlobService(configuration);
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -24,6 +31,8 @@ app.UseRouting();
 app.UseAuthorization();
 
 app.MapStaticAssets();
+
+app.UseStaticFiles();
 
 app.MapControllerRoute(
     name: "default",

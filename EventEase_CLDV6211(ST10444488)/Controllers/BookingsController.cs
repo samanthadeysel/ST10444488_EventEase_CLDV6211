@@ -61,6 +61,15 @@ namespace EventEase_CLDV6211_ST10444488_.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("BookingID,EventID,VenueID,BookingDate")] Booking booking)
         {
+            bool isVenueBooked = await _context.Booking.AnyAsync(b =>
+                b.VenueID == booking.VenueID &&
+                b.BookingDate == booking.BookingDate);
+
+            if (isVenueBooked)
+            {
+                ModelState.AddModelError("VenueID", "This venue is already booked for the selected date.");
+            }
+
             if (ModelState.IsValid)
             {
                 _context.Add(booking);
@@ -155,11 +164,58 @@ namespace EventEase_CLDV6211_ST10444488_.Controllers
             var booking = await _context.Booking.FindAsync(id);
             if (booking != null)
             {
+                if (booking.Venues != null || booking.Events != null)
+                {
+                    TempData["ErrorMessage"] = "This booking cannot be deleted as it is linked to a venue or event.";
+                    return RedirectToAction(nameof(Index));
+                }
+
                 _context.Booking.Remove(booking);
+                await _context.SaveChangesAsync();
             }
 
-            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
+        }
+
+        public async Task<IActionResult> Search(string searchTerm, DateTime? startDate, DateTime? endDate, string location)
+        {
+            // Fetch distinct locations for dropdown
+            ViewBag.Venues = await _context.Venue
+                .Select(v => v.Location)
+                .Distinct()
+                .ToListAsync();
+
+            var bookingsQuery = _context.Booking
+                .Include(b => b.Venues)
+                .Include(b => b.Events)
+                .AsQueryable();
+
+            // Apply search filters
+            if (!string.IsNullOrEmpty(searchTerm))
+            {
+                bookingsQuery = bookingsQuery.Where(b =>
+                    b.BookingID.ToString().Contains(searchTerm) ||
+                    (b.Events != null && b.Events.EventName.Contains(searchTerm))
+                );
+            }
+
+            if (startDate.HasValue)
+            {
+                bookingsQuery = bookingsQuery.Where(b => b.BookingDate >= startDate.Value);
+            }
+
+            if (endDate.HasValue)
+            {
+                bookingsQuery = bookingsQuery.Where(b => b.BookingDate <= endDate.Value);
+            }
+
+            if (!string.IsNullOrEmpty(location))
+            {
+                bookingsQuery = bookingsQuery.Where(b => b.Venues != null && b.Venues.Location == location);
+            }
+
+            var bookings = await bookingsQuery.ToListAsync();
+            return View(bookings);
         }
 
         private bool BookingExists(int id)

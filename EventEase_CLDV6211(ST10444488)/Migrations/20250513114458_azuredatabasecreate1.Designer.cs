@@ -4,6 +4,7 @@ using EventEase_CLDV6211_ST10444488_.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EventEase_CLDV6211_ST10444488_.Migrations
 {
     [DbContext(typeof(EventEase_CLDV6211_ST10444488_Context))]
-    partial class EventEase_CLDV6211_ST10444488_ContextModelSnapshot : ModelSnapshot
+    [Migration("20250513114458_azuredatabasecreate1")]
+    partial class azuredatabasecreate1
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

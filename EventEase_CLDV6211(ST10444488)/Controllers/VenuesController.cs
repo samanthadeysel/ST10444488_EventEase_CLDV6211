@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using EventEase_CLDV6211_ST10444488_.Data;
 using EventEase_CLDV6211_ST10444488_.Models;
@@ -12,11 +7,13 @@ namespace EventEase_CLDV6211_ST10444488_.Controllers
 {
     public class VenuesController : Controller
     {
+        private readonly BlobService _blobService;
         private readonly EventEase_CLDV6211_ST10444488_Context _context;
 
-        public VenuesController(EventEase_CLDV6211_ST10444488_Context context)
+        public VenuesController(EventEase_CLDV6211_ST10444488_Context context, BlobService blobService)
         {
             _context = context;
+            _blobService = blobService;
         }
 
         // GET: Venues
@@ -44,7 +41,7 @@ namespace EventEase_CLDV6211_ST10444488_.Controllers
         }
 
         // GET: Venues/Create
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
             return View();
         }
@@ -54,13 +51,24 @@ namespace EventEase_CLDV6211_ST10444488_.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("VenueID,VenueName,Capacity,Location,ImageURL")] Venue venue)
+        public async Task<IActionResult> Create([Bind("VenueID,VenueName,Capacity,Location")] Venue venue, IFormFile photoFile)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(venue);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                try
+                {
+                    if (photoFile != null && photoFile.Length > 0)
+                    {
+                        venue.ImageURL = await _blobService.UploadFileAsync(photoFile); // Upload image to Blob Storage
+                    }
+                    _context.Add(venue);
+                    await _context.SaveChangesAsync();
+                    return RedirectToAction(nameof(Index));
+                }
+                catch (Exception ex)
+                {
+                    TempData["ErrorMessage"] = $"Error uploading image: {ex.Message}";
+                }
             }
             return View(venue);
         }
@@ -86,32 +94,40 @@ namespace EventEase_CLDV6211_ST10444488_.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("VenueID,VenueName,Capacity,Location,ImageURL")] Venue venue)
+        public async Task<IActionResult> Edit(int id, [Bind("VenueID,VenueName,Capacity,Location,ImageURL")] Venue venue, IFormFile photoFile)
         {
             if (id != venue.VenueID)
             {
                 return NotFound();
             }
-
             if (ModelState.IsValid)
             {
                 try
                 {
-                    _context.Update(venue);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!VenueExists(venue.VenueID))
+                    if (photoFile != null && photoFile.Length > 0)
                     {
-                        return NotFound();
+                        Console.WriteLine("Uploading new image to Azure Blob Storage...");
+                        venue.ImageURL = await _blobService.UploadFileAsync(photoFile);
+                        Console.WriteLine($"Image uploaded successfully. New URL: {venue.ImageURL}");
                     }
                     else
                     {
-                        throw;
+                        Console.WriteLine("No new image uploaded. Keeping existing image.");
                     }
+                    _context.Update(venue);
+                    await _context.SaveChangesAsync();
+                    Console.WriteLine("Venue updated successfully!");
+                    return RedirectToAction(nameof(Index));
                 }
-                return RedirectToAction(nameof(Index));
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error updating venue: {ex.Message}");
+                    TempData["ErrorMessage"] = $"Error updating venue: {ex.Message}";
+                }
+            }
+            else
+            {
+                Console.WriteLine("ModelState is invalid! Returning to Edit page.");
             }
             return View(venue);
         }
@@ -139,12 +155,18 @@ namespace EventEase_CLDV6211_ST10444488_.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var venue = await _context.Venue.FindAsync(id);
-            if (venue != null)
+            var venue = await _context.Venue
+                .Include(v => v.Bookings) // Include related bookings
+                .FirstOrDefaultAsync(v => v.VenueID == id);
+            if (venue == null)
+                return NotFound();
+            // Check if the venue has active bookings
+            if (venue.Bookings != null && venue.Bookings.Any())
             {
-                _context.Venue.Remove(venue);
+                TempData["ErrorMessage"] = "Venue cannot be deleted because it has active bookings!";
+                return RedirectToAction(nameof(Index)); // Prevent deletion
             }
-
+            _context.Venue.Remove(venue);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }

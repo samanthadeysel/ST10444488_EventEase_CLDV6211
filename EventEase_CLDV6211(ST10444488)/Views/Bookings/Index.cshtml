@@ -6,6 +6,13 @@
 
 <h1>Booking</h1>
 
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">
+        @TempData["ErrorMessage"]
+    </div>
+}
+
 <p>
     <a asp-action="Create">Create New Booking</a>
 </p>
@@ -27,14 +34,19 @@
     <tbody>
 @foreach (var item in Model) {
         <tr>
+             @if (Model.Count(b => b.VenueID == item.VenueID && b.BookingDate == item.BookingDate) > 1)
+                {
+                    <td class="text-danger">⚠ Conflict Detected - @item.BookingDate</td>
+                }
+                else
+                {
+                    <td>@Html.DisplayFor(modelItem => item.BookingDate)</td>
+                }
             <td>
-                @Html.DisplayFor(modelItem => item.BookingDate)
+                @(item.Venues != null ? item.Venues.VenueName : "No Venue Assigned")
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Venues.VenueName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Events.EventName)
+                @(item.Events != null ? item.Events.EventName : "No Event Assigned")
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.BookingID">Edit</a> |
