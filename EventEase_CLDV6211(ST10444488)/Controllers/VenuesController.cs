@@ -187,6 +187,36 @@ namespace EventEase_CLDV6211_ST10444488_.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        public async Task<IActionResult> Search(string searchTerm, DateTime? availabilityDate)
+        {
+            var venuesQuery = _context.Venue.AsQueryable();
+
+            // Optional text filter (venue name or location)
+            if (!string.IsNullOrEmpty(searchTerm))
+            {
+                venuesQuery = venuesQuery.Where(v =>
+                    v.VenueName.Contains(searchTerm) ||
+                    v.Location.Contains(searchTerm));
+            }
+
+            if (availabilityDate.HasValue)
+            {
+                // Get booked venues on that date
+                var bookedVenueIds = await _context.Booking
+                    .Where(b => b.BookingDate.Date == availabilityDate.Value.Date)
+                    .Select(b => b.VenueID)
+                    .Distinct()
+                    .ToListAsync();
+
+                // Remove booked venues from results
+                venuesQuery = venuesQuery.Where(v => !bookedVenueIds.Contains(v.VenueID));
+            }
+
+            var results = await venuesQuery.ToListAsync();
+            ViewBag.AvailabilityDate = availabilityDate?.ToShortDateString();
+            return View("Index", results); // Reuse your existing Index view
+        }
+
         private bool VenueExists(int id)
         {
             return _context.Venue.Any(e => e.VenueID == id);

@@ -177,45 +177,56 @@ namespace EventEase_CLDV6211_ST10444488_.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        public async Task<IActionResult> Search(string searchTerm, DateTime? startDate, DateTime? endDate, string location)
-        {
-            
-            ViewBag.Venues = await _context.Venue
-                .Select(v => v.Location)
-                .Distinct()
-                .ToListAsync();
+        //public async Task<IActionResult> Search(string searchTerm, DateTime? startDate, DateTime? endDate, string location, int? eventTypeId, bool onlyAvailable=false)
+        //{
 
-            var bookingsQuery = _context.Booking
-                .Include(b => b.Venues)
-                .Include(b => b.Events)
-                .AsQueryable();
+        //    ViewBag.Venues = await _context.Venue
+        //        .Select(v => v.Location)
+        //        .Distinct()
+        //        .ToListAsync();
 
-            if (!string.IsNullOrEmpty(searchTerm))
-            {
-                bookingsQuery = bookingsQuery.Where(b =>
-                    b.BookingID.ToString().Contains(searchTerm) ||
-                    (b.Events != null && b.Events.EventName.Contains(searchTerm))
-                );
-            }
+        //    var bookingsQuery = _context.Booking
+        //        .Include(b => b.Venues)
+        //        .Include(b => b.Events)
+        //        .Include(b => b.EventType)
+        //        .AsQueryable();
 
-            if (startDate.HasValue)
-            {
-                bookingsQuery = bookingsQuery.Where(b => b.BookingDate >= startDate.Value);
-            }
+        //    if (!string.IsNullOrEmpty(searchTerm))
+        //    {
+        //        bookingsQuery = bookingsQuery.Where(b =>
+        //            b.BookingID.ToString().Contains(searchTerm) ||
+        //            (b.Events != null && b.Events.EventName.Contains(searchTerm))
+        //        );
+        //    }
 
-            if (endDate.HasValue)
-            {
-                bookingsQuery = bookingsQuery.Where(b => b.BookingDate <= endDate.Value);
-            }
+        //    if (startDate.HasValue)
+        //    {
+        //        bookingsQuery = bookingsQuery.Where(b => b.BookingDate >= startDate.Value);
+        //    }
 
-            if (!string.IsNullOrEmpty(location))
-            {
-                bookingsQuery = bookingsQuery.Where(b => b.Venues != null && b.Venues.Location == location);
-            }
+        //    if (endDate.HasValue)
+        //    {
+        //        bookingsQuery = bookingsQuery.Where(b => b.BookingDate <= endDate.Value);
+        //    }
 
-            var bookings = await bookingsQuery.ToListAsync();
-            return View(bookings);
-        }
+        //    if (eventTypeId.HasValue)
+        //    {
+        //        bookingsQuery = bookingsQuery.Where(b => b.EventTypeID == eventTypeId.Value);
+        //    }
+
+        //    if (onlyAvailable)
+        //    {
+        //        bookingsQuery = bookingsQuery.Where(b => b.Venues.IsAvailable);
+        //    }
+
+        //    if (!string.IsNullOrEmpty(location))
+        //    {
+        //        bookingsQuery = bookingsQuery.Where(b => b.Venues != null && b.Venues.Location == location);
+        //    }
+
+        //    var bookings = await bookingsQuery.ToListAsync();
+        //    return View(bookings);
+        //}
 
         private bool BookingExists(int id)
         {

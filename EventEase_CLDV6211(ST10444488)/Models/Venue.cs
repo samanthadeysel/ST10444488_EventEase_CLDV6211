@@ -14,5 +14,7 @@ namespace EventEase_CLDV6211_ST10444488_.Models
         public string ImageURL { get; set; }
 
         public List<Booking>? Bookings { get; set; }
+
+        public bool IsAvailable { get; set; } = true;
     }
 }

@@ -19,5 +19,9 @@ namespace EventEase_CLDV6211_ST10444488_.Models
 
         //public Venue? Venues { get; set; }
         public List<Booking>? Bookings { get; set; }
+
+        public int? EventTypeID { get; set; }
+        public EventType EventType { get; set; }
+
     }
 }

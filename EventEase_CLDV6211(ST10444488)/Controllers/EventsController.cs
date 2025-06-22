@@ -46,7 +46,9 @@ namespace EventEase_CLDV6211_ST10444488_.Controllers
         // GET: Events/Create
         public IActionResult Create()
         {
+            ViewData["EventTypeID"] = new SelectList(_context.EventType, "EventTypeID", "TypeName");
             return View();
+
         }
 
         // POST: Events/Create
@@ -54,7 +56,7 @@ namespace EventEase_CLDV6211_ST10444488_.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("EventID,EventName,EventDate,Description,VenueID")] Event eventModel)
+        public async Task<IActionResult> Create([Bind("EventID,EventName,EventDate,Description,VenueID,EventTypeID")] Event eventModel)
         {
             if (ModelState.IsValid)
             {
@@ -63,6 +65,7 @@ namespace EventEase_CLDV6211_ST10444488_.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
+            ViewData["EventTypeID"] = new SelectList(_context.EventType, "EventTypeID", "TypeName", eventModel.EventTypeID);
             TempData["ErrorMessage"] = "Invalid input. Please check your entries.";
             return View(eventModel);
         }
@@ -80,6 +83,7 @@ namespace EventEase_CLDV6211_ST10444488_.Controllers
             {
                 return NotFound();
             }
+            ViewData["EventTypeID"] = new SelectList(_context.EventType, "EventTypeID", "TypeName", @event.EventTypeID);
             return View(@event);
         }
 
@@ -88,7 +92,7 @@ namespace EventEase_CLDV6211_ST10444488_.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("EventID,EventName,EventDate,Description")] Event @event)
+        public async Task<IActionResult> Edit(int id, [Bind("EventID,EventName,EventDate,Description, EventTypeID")] Event @event)
         {
             if (id != @event.EventID)
             {
@@ -115,6 +119,7 @@ namespace EventEase_CLDV6211_ST10444488_.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
+            ViewData["EventTypeID"] = new SelectList(_context.EventType, "EventTypeID", "TypeName", @event.EventTypeID);
             return View(@event);
         }
 
