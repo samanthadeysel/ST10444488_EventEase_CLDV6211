@@ -20,8 +20,10 @@ namespace EventEase_CLDV6211_ST10444488_.Models
         //public Venue? Venues { get; set; }
         public List<Booking>? Bookings { get; set; }
 
+        [Required(ErrorMessage = "Please select an event type")]
         public int? EventTypeID { get; set; }
-        public EventType EventType { get; set; }
+
+        public EventType? EventType { get; set; }
 
     }
 }

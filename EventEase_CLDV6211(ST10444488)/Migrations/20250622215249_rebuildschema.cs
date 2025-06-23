@@ -6,25 +6,23 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace EventEase_CLDV6211_ST10444488_.Migrations
 {
     /// <inheritdoc />
-    public partial class initialcreate : Migration
+    public partial class rebuildschema : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.CreateTable(
-                name: "Event",
-                columns: table => new
-                {
-                    EventID = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    EventName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    EventDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Event", x => x.EventID);
-                });
+            //migrationBuilder.CreateTable(
+            //    name: "EventType",
+            //    columns: table => new
+            //    {
+            //        EventTypeID = table.Column<int>(type: "int", nullable: false)
+            //            .Annotation("SqlServer:Identity", "1, 1"),
+            //        TypeName = table.Column<string>(type: "nvarchar(max)", nullable: false)
+            //    },
+            //    constraints: table =>
+            //    {
+            //        table.PrimaryKey("PK_EventType", x => x.EventTypeID);
+            //    });
 
             migrationBuilder.CreateTable(
                 name: "Venue",
@@ -35,11 +33,33 @@ namespace EventEase_CLDV6211_ST10444488_.Migrations
                     VenueName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Capacity = table.Column<int>(type: "int", nullable: false),
                     Location = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    ImageURL = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    ImageURL = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    IsAvailable = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Venue", x => x.VenueID);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Event",
+                columns: table => new
+                {
+                    EventID = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    EventName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    EventDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    EventTypeID = table.Column<int>(type: "int", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Event", x => x.EventID);
+                    table.ForeignKey(
+                        name: "FK_Event_EventType_EventTypeID",
+                        column: x => x.EventTypeID,
+                        principalTable: "EventType",
+                        principalColumn: "EventTypeID");
                 });
 
             migrationBuilder.CreateTable(
@@ -78,6 +98,11 @@ namespace EventEase_CLDV6211_ST10444488_.Migrations
                 name: "IX_Booking_VenueID",
                 table: "Booking",
                 column: "VenueID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Event_EventTypeID",
+                table: "Event",
+                column: "EventTypeID");
         }
 
         /// <inheritdoc />
@@ -91,6 +116,9 @@ namespace EventEase_CLDV6211_ST10444488_.Migrations
 
             migrationBuilder.DropTable(
                 name: "Venue");
+
+            migrationBuilder.DropTable(
+                name: "EventType");
         }
     }
 }

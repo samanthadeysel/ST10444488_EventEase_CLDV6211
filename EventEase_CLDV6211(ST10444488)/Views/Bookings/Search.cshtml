@@ -6,25 +6,26 @@
 
 <h1>Search Bookings</h1>
 
-<form asp-action="Search" method="get" class="form-inline mb-3">
+<div class="search-form">
+  <form asp-action="Search" method="get" enctype="multipart/form-data">
     <div class="form-group">
         <label for="searchTerm">Search by Booking ID or Event Name:</label>
-        <input type="text" name="searchTerm" class="form-control" placeholder="Enter Booking ID or Event Name">
+            <input type="text" name="searchTerm" class="form-control elegant-input" placeholder="Enter Booking ID or Event Name">
     </div>
 
     <div class="form-group">
         <label for="startDate">Start Date:</label>
-        <input type="date" name="startDate" class="form-control">
+            <input type="date" name="startDate" class="form-control elegant-input">
     </div>
 
     <div class="form-group">
         <label for="endDate">End Date:</label>
-        <input type="date" name="endDate" class="form-control">
+            <input type="date" name="endDate" class="form-control elegant-input">
     </div>
 
     <div class="form-group">
         <label for="location">Location:</label>
-        <select name="location" class="form-control">
+            <select name="location" class="form-control elegant-input">
             <option value="">All Locations</option>
             @if (ViewBag.Venues != null)
             {
@@ -36,10 +37,32 @@
         </select>
     </div>
 
-    <button type="submit" class="btn btn-primary">Search</button>
-</form>
+    <div class="form-group">
+        <label for="eventTypeId">Event Type:</label>
+            <select name="eventTypeId" class="form-control elegant-input">
+            <option value="">All Types</option>
+            @if (ViewBag.EventTypes != null)
+            {
+                foreach (var eventType in ViewBag.EventTypes)
+                {
+                    <option value="@eventType.EventTypeID">@eventType.TypeName</option>
+                }
+            }
+        </select>
+    </div>
 
-<table class="table">
+    <div class="form-group form-check mb-3">
+    <input type="checkbox" name="onlyAvailable" class="form-check-input" id="onlyAvailable" value="true" />
+    <label class="form-check-label" for="onlyAvailable">
+        Only show bookings with available venues
+    </label>
+</div>
+
+    <button type="submit" class="btn-blush btn-shadow">Search</button>
+  </form>
+</div>
+
+<table class="table custom-theme-table">
     <thead>
         <tr>
             <th>Booking ID</th>

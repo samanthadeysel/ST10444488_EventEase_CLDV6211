@@ -6,33 +6,38 @@
 
 <h1>Create</h1>
 
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+}
+
 <h4>Venue</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="Create" method="post" enctype="multipart/form-data">
+        <form asp-action="Create" enctype="multipart/form-data" method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
                 <label asp-for="VenueName" class="control-label"></label>
-                <input asp-for="VenueName" class="form-control" />
+                <input asp-for="VenueName" class="form-control elegant-input" />
                 <span asp-validation-for="VenueName" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="Capacity" class="control-label"></label>
-                <input asp-for="Capacity" class="form-control" />
+                <input asp-for="Capacity" type="number" class="form-control elegant-input" />
                 <span asp-validation-for="Capacity" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="Location" class="control-label"></label>
-                <input asp-for="Location" class="form-control" />
+                <input asp-for="Location" class="form-control elegant-input" />
                 <span asp-validation-for="Location" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label for="photoFile">Upload an Image:</label>
-                <input type="file" name="photoFile" accept="image/*" class="form-control" required />
+                <input type="file" name="photoFile" class="form-control" required/>
             </div>
             <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
+                <input type="submit" value="Save" class="btn btn-blush" />
             </div>
         </form>
     </div>

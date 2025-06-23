@@ -2,6 +2,11 @@
   "dependencies": {
     "secrets1": {
       "type": "secrets.user"
+    },
+    "storage1": {
+      "ignored": "true",
+      "type": "storage",
+      "connectionId": "AzureBlobStorage:ConnectionString"
     }
   }
 }

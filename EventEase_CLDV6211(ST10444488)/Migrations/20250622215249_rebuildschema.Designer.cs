@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EventEase_CLDV6211_ST10444488_.Migrations
 {
     [DbContext(typeof(EventEase_CLDV6211_ST10444488_Context))]
-    [Migration("20250403150856_initialcreate")]
-    partial class initialcreate
+    [Migration("20250622215249_rebuildschema")]
+    partial class rebuildschema
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -70,9 +70,31 @@ namespace EventEase_CLDV6211_ST10444488_.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("EventTypeID")
+                        .HasColumnType("int");
+
                     b.HasKey("EventID");
 
+                    b.HasIndex("EventTypeID");
+
                     b.ToTable("Event");
+                });
+
+            modelBuilder.Entity("EventEase_CLDV6211_ST10444488_.Models.EventType", b =>
+                {
+                    b.Property<int>("EventTypeID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("EventTypeID"));
+
+                    b.Property<string>("TypeName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("EventTypeID");
+
+                    b.ToTable("EventType");
                 });
 
             modelBuilder.Entity("EventEase_CLDV6211_ST10444488_.Models.Venue", b =>
@@ -89,6 +111,9 @@ namespace EventEase_CLDV6211_ST10444488_.Migrations
                     b.Property<string>("ImageURL")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsAvailable")
+                        .HasColumnType("bit");
 
                     b.Property<string>("Location")
                         .IsRequired()
@@ -124,7 +149,21 @@ namespace EventEase_CLDV6211_ST10444488_.Migrations
 
             modelBuilder.Entity("EventEase_CLDV6211_ST10444488_.Models.Event", b =>
                 {
+                    b.HasOne("EventEase_CLDV6211_ST10444488_.Models.EventType", "EventType")
+                        .WithMany("Events")
+                        .HasForeignKey("EventTypeID");
+
+                    b.Navigation("EventType");
+                });
+
+            modelBuilder.Entity("EventEase_CLDV6211_ST10444488_.Models.Event", b =>
+                {
                     b.Navigation("Bookings");
+                });
+
+            modelBuilder.Entity("EventEase_CLDV6211_ST10444488_.Models.EventType", b =>
+                {
+                    b.Navigation("Events");
                 });
 
             modelBuilder.Entity("EventEase_CLDV6211_ST10444488_.Models.Venue", b =>

@@ -22,7 +22,10 @@ namespace EventEase_CLDV6211_ST10444488_.Controllers
         // GET: Events
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Event.ToListAsync());
+            var events = await _context.Event
+                .Include(e => e.EventType)
+                .ToListAsync();
+            return View(events);
         }
 
         // GET: Events/Details/5
@@ -46,9 +49,8 @@ namespace EventEase_CLDV6211_ST10444488_.Controllers
         // GET: Events/Create
         public IActionResult Create()
         {
-            ViewData["EventTypeID"] = new SelectList(_context.EventType, "EventTypeID", "TypeName");
+            ViewBag.EventTypeID = new SelectList(_context.EventType, "EventTypeID", "TypeName");
             return View();
-
         }
 
         // POST: Events/Create
@@ -65,7 +67,7 @@ namespace EventEase_CLDV6211_ST10444488_.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            ViewData["EventTypeID"] = new SelectList(_context.EventType, "EventTypeID", "TypeName", eventModel.EventTypeID);
+            ViewBag.EventTypeID = new SelectList(_context.EventType, "EventTypeID", "TypeName");
             TempData["ErrorMessage"] = "Invalid input. Please check your entries.";
             return View(eventModel);
         }
@@ -83,7 +85,7 @@ namespace EventEase_CLDV6211_ST10444488_.Controllers
             {
                 return NotFound();
             }
-            ViewData["EventTypeID"] = new SelectList(_context.EventType, "EventTypeID", "TypeName", @event.EventTypeID);
+            ViewBag.EventTypeID = new SelectList(_context.EventType, "EventTypeID", "TypeName");
             return View(@event);
         }
 
@@ -119,7 +121,7 @@ namespace EventEase_CLDV6211_ST10444488_.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["EventTypeID"] = new SelectList(_context.EventType, "EventTypeID", "TypeName", @event.EventTypeID);
+            ViewBag.EventTypeID = new SelectList(_context.EventType, "EventTypeID", "TypeName");
             return View(@event);
         }
 

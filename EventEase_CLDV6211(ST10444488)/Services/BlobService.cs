@@ -1,4 +1,5 @@
 ﻿using Azure.Storage.Blobs;
+using Azure.Storage.Blobs.Models;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.IO;
@@ -13,48 +14,43 @@ public class BlobService
         var connectionString = configuration["AzureBlobStorage:ConnectionString"];
         var containerName = configuration["AzureBlobStorage:ContainerName"];
 
-        if (string.IsNullOrEmpty(connectionString) || string.IsNullOrEmpty(containerName))
-        {
-            throw new InvalidOperationException("Azure Blob Storage settings are missing.");
-        }
-
         _containerClient = new BlobContainerClient(connectionString, containerName);
+        _containerClient.CreateIfNotExists(); 
     }
 
     public async Task<string> UploadFileAsync(IFormFile file)
     {
-        if (file == null || file.Length == 0)
-            throw new ArgumentException("Invalid file provided");
+        var fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
+        var blobClient = _containerClient.GetBlobClient(fileName);
 
-        var blobName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
-        var blobClient = _containerClient.GetBlobClient(blobName);
+        using var stream = file.OpenReadStream();
+        await blobClient.UploadAsync(stream, overwrite: true);
 
-        using (var stream = file.OpenReadStream())
-        {
-            await blobClient.UploadAsync(stream, true);
-        }
-
-        await blobClient.SetHttpHeadersAsync(new Azure.Storage.Blobs.Models.BlobHttpHeaders
+        await blobClient.SetHttpHeadersAsync(new BlobHttpHeaders
         {
             ContentType = file.ContentType
         });
 
-        return blobClient.Uri.ToString(); 
+        return blobClient.Uri.ToString();
     }
+
+    public async Task<string> ReplaceFileAsync(string existingBlobUrl, IFormFile newFile)
+    {
+        if (!string.IsNullOrEmpty(existingBlobUrl))
+        {
+            await DeleteFileAsync(existingBlobUrl);
+        }
+
+        return await UploadFileAsync(newFile);
+    }
+
     public async Task DeleteFileAsync(string blobUrl)
     {
-        try
-        {
-            var blobUri = new Uri(blobUrl);
-            string blobName = Path.GetFileName(blobUri.LocalPath);
-            var blobClient = _containerClient.GetBlobClient(blobName);
+        if (string.IsNullOrWhiteSpace(blobUrl))
+            return;
 
-            await blobClient.DeleteIfExistsAsync();
-            Console.WriteLine($"Deleted blob: {blobUrl}");
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error deleting blob: {ex.Message}");
-        }
+        var blobName = Path.GetFileName(new Uri(blobUrl).LocalPath);
+        var blobClient = _containerClient.GetBlobClient(blobName);
+        await blobClient.DeleteIfExistsAsync();
     }
 }

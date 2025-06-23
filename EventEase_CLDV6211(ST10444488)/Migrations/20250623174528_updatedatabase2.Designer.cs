@@ -12,15 +12,15 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EventEase_CLDV6211_ST10444488_.Migrations
 {
     [DbContext(typeof(EventEase_CLDV6211_ST10444488_Context))]
-    [Migration("20250404141603_AzureDB3")]
-    partial class AzureDB3
+    [Migration("20250623174528_updatedatabase2")]
+    partial class updatedatabase2
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.0")
+                .HasAnnotation("ProductVersion", "9.0.6")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -70,9 +70,31 @@ namespace EventEase_CLDV6211_ST10444488_.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("EventTypeID")
+                        .HasColumnType("int");
+
                     b.HasKey("EventID");
 
+                    b.HasIndex("EventTypeID");
+
                     b.ToTable("Event");
+                });
+
+            modelBuilder.Entity("EventEase_CLDV6211_ST10444488_.Models.EventType", b =>
+                {
+                    b.Property<int>("EventTypeID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("EventTypeID"));
+
+                    b.Property<string>("TypeName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("EventTypeID");
+
+                    b.ToTable("EventType");
                 });
 
             modelBuilder.Entity("EventEase_CLDV6211_ST10444488_.Models.Venue", b =>
@@ -124,7 +146,23 @@ namespace EventEase_CLDV6211_ST10444488_.Migrations
 
             modelBuilder.Entity("EventEase_CLDV6211_ST10444488_.Models.Event", b =>
                 {
+                    b.HasOne("EventEase_CLDV6211_ST10444488_.Models.EventType", "EventType")
+                        .WithMany("Events")
+                        .HasForeignKey("EventTypeID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("EventType");
+                });
+
+            modelBuilder.Entity("EventEase_CLDV6211_ST10444488_.Models.Event", b =>
+                {
                     b.Navigation("Bookings");
+                });
+
+            modelBuilder.Entity("EventEase_CLDV6211_ST10444488_.Models.EventType", b =>
+                {
+                    b.Navigation("Events");
                 });
 
             modelBuilder.Entity("EventEase_CLDV6211_ST10444488_.Models.Venue", b =>

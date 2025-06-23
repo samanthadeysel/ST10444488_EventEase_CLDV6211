@@ -238,3 +238,87 @@ body {
             margin-bottom: 5px;
         }
 }
+
+.elegant-input {
+    border: 1px solid #eacbd2;
+    border-radius: 6px;
+    box-shadow: none;
+    padding: 6px 10px;
+    transition: box-shadow 0.2s ease;
+}
+
+    .elegant-input:focus {
+        box-shadow: 0 0 4px rgba(196, 131, 150, 0.4);
+    }
+
+.btn-blush {
+    background-color: #e2a8b1;
+    border: none;
+    color: white;
+    padding: 8px 18px;
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
+}
+
+    .btn-blush:hover {
+        background-color: #cf8a96;
+    }
+
+.custom-theme-table {
+    border-collapse: collapse;
+    width: 100%;
+    background-color: #fff9fa;
+    border: 1px solid #f3d9df;
+}
+
+    .custom-theme-table th {
+        background-color: #f5e0b9; 
+        color: #5e3e28; 
+        font-weight: 600;
+        padding: 10px;
+        border-bottom: 1px solid #e3c69f;
+    }
+
+    .custom-theme-table td {
+        padding: 8px;
+        border-top: 1px solid #f3d9df;
+    }
+
+.form-group label {
+    font-weight: 500;
+    margin-bottom: 4px;
+}
+
+.btn-create {
+    background-color: #eac1a6;
+    color: white;
+    padding: 8px 14px;
+    border-radius: 5px;
+    font-weight: 500;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+    display: inline-block;
+}
+
+    .btn-create:hover {
+        background-color: #d3a188;
+    }
+
+.form-check {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding-top: 5px;
+}
+
+.btn-check-availability {
+    background-color: #ff7f50; /* coral/orange tone */
+    border-color: #ff7f50;
+    color: white;
+}
+
+    .btn-check-availability:hover {
+        background-color: #ff4081; /* vibrant pink hover */
+        border-color: #ff4081;
+        color: white;
+    }
